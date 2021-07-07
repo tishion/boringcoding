@@ -75,20 +75,21 @@ func (p *ClientPool) getOrCreate() (*UserClient, error) {
 		return client, nil
 	default:
 	}
+
 	p.Lock()
+	defer p.Unlock()
+
 	if p.numOpen >= p.maxOpen {
 		client := <-p.pool
-		p.Unlock()
 		return client, nil
 	}
 
 	client, err := p.factory()
 	if err != nil {
-		p.Unlock()
 		return nil, err
 	}
+
 	p.numOpen++
-	p.Unlock()
 	return client, nil
 }
 
@@ -97,18 +98,18 @@ func (p *ClientPool) Release(client *UserClient) error {
 	if p.closed {
 		return ErrPoolClosed
 	}
-	p.Lock()
 	p.pool <- client
-	p.Unlock()
 	return nil
 }
 
 // Closes the client
 func (p *ClientPool) Close(client *UserClient) error {
 	p.Lock()
+	defer p.Unlock()
+
 	client.Close()
 	p.numOpen--
-	p.Unlock()
+
 	return nil
 }
 
@@ -117,13 +118,16 @@ func (p *ClientPool) Shutdown() error {
 	if p.closed {
 		return ErrPoolClosed
 	}
+
 	p.Lock()
+	defer p.Unlock()
+
 	close(p.pool)
 	for client := range p.pool {
 		client.Close()
 		p.numOpen--
 	}
+
 	p.closed = true
-	p.Unlock()
 	return nil
 }
