@@ -1,0 +1,121 @@
+swagger: "2.0"
+info:
+  description: "User management system API doc"
+  version: "1.0.0"
+  title: "User Management"
+host: "localhost"
+basePath: "/api/v1"
+schemes:
+- "https"
+- "http"
+paths:
+  /login:
+    post:
+      summary: "Login the system with user credentials"
+      description: ""
+      operationId: "login"
+      consumes:
+      - "application/x-www-form-urlencoded"
+      produces:
+      - "application/json"
+      parameters:
+        - in: "formData"
+          name: "username"
+          type: "string"
+          description: "The user name"
+        - in: "formData"
+          name: "password"
+          type: "string"
+          description: "The MD5 digest of the user's password"
+      responses:
+        "200":
+          description: "ok"
+          schema:
+            type: "object"
+            properties:
+              Code:
+                type: "integer"
+                description: "The response result code"
+              Error:
+                type: "string"
+                description: "The response error message"
+              Data:
+                type: "object"
+                description: "The response data"
+          
+  /profile/{username}:
+    get:
+      summary: "Get the user profile"
+      description: ""
+      operationId: "getProfile"
+      produces:
+      - "application/json"
+      parameters:
+        - in: "path"
+          name: "username"
+          type: "string"
+          required: true
+          description: "The username"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            type: "object"
+            properties:
+              Code:
+                type: "integer"
+                description: "The response result code"
+              Error:
+                type: "string"
+                description: "The response error message"
+              Data:
+                type: "object"
+                description: "The response data"
+                properties:
+                  nickname:
+                    type: "string"
+                    description: "The user nickname"
+                  avatar: 
+                    type: "string"
+                    description: "The based encoded image data"
+        
+        "400":
+          description: "Need authentication"
+    put:
+      summary: "Update the user profile"
+      description: ""
+      operationId: "updateProfile"
+      produces:
+      - "application/json"
+      parameters:
+        - in: "path"
+          name: "username"
+          type: "string"
+          required: true
+          description: "The username"
+      responses:
+        "200":
+          description: "Ok"
+          schema:
+            type: "object"
+            properties:
+              Code:
+                type: "integer"
+                description: "The response result code"
+              Error:
+                type: "string"
+                description: "The response error message"
+              Data:
+                type: "object"
+                description: "The response data"
+                properties:
+                  nickname:
+                    type: "string"
+                    description: "The user nickname"
+                  avatar: 
+                    type: "string"
+                    description: "The based encoded image data"
+        
+        "400":
+          description: "Need authentication"
+          
